@@ -10,19 +10,22 @@ import teammates.test.driver.AssertHelper;
 import teammates.ui.controller.InstructorEditInstructorFeedbackPageAction;
 import teammates.ui.controller.ShowPageResult;
 
+/**
+ * SUT: {@link InstructorEditInstructorFeedbackPageAction}.
+ */
 public class InstructorEditInstructorFeedbackPageActionTest extends BaseActionTest {
 
     @Override
     protected String getActionUri() {
         return Const.ActionURIs.INSTRUCTOR_EDIT_INSTRUCTOR_FEEDBACK_PAGE;
     }
-    
+
     @Override
     protected void prepareTestData() {
         dataBundle = loadDataBundle("/InstructorEditInstructorFeedbackPageTest.json");
         removeAndRestoreDataBundle(dataBundle);
     }
-    
+
     @Override
     @Test
     public void testExecuteAndPostProcess() {
@@ -30,7 +33,7 @@ public class InstructorEditInstructorFeedbackPageActionTest extends BaseActionTe
         InstructorAttributes moderatedInstructor = dataBundle.instructors.get("IEIFPTCoursehelper1");
         InstructorEditInstructorFeedbackPageAction editInstructorFpAction;
         ShowPageResult showPageResult;
-        
+
         String courseId = moderatedInstructor.courseId;
         String feedbackSessionName = "";
         String moderatedInstructorEmail = "IEIFPTCoursehelper1@gmail.tmt";
@@ -45,7 +48,7 @@ public class InstructorEditInstructorFeedbackPageActionTest extends BaseActionTe
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, feedbackSessionName,
                 Const.ParamsNames.FEEDBACK_SESSION_MODERATED_PERSON, moderatedInstructorEmail
         };
-        
+
         editInstructorFpAction = getAction(submissionParams);
         showPageResult = getShowPageResult(editInstructorFpAction);
 
@@ -59,7 +62,7 @@ public class InstructorEditInstructorFeedbackPageActionTest extends BaseActionTe
                     + "Session Name: First feedback session<br>Course ID: IEIFPTCourse|||"
                     + "/page/instructorEditInstructorFeedbackPage",
                 editInstructorFpAction.getLogMessage());
-        
+
         ______TS("success: another feedback");
         feedbackSessionName = "Another feedback session";
         submissionParams = new String[]{
@@ -67,7 +70,7 @@ public class InstructorEditInstructorFeedbackPageActionTest extends BaseActionTe
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, feedbackSessionName,
                 Const.ParamsNames.FEEDBACK_SESSION_MODERATED_PERSON, moderatedInstructorEmail
         };
-        
+
         editInstructorFpAction = getAction(submissionParams);
         showPageResult = getShowPageResult(editInstructorFpAction);
 
@@ -81,7 +84,7 @@ public class InstructorEditInstructorFeedbackPageActionTest extends BaseActionTe
                             + "Session Name: Another feedback session<br>Course ID: IEIFPTCourse|||"
                             + "/page/instructorEditInstructorFeedbackPage";
         AssertHelper.assertLogMessageEquals(logMessage, editInstructorFpAction.getLogMessage());
-        
+
         ______TS("failure: does not have privilege (helper can't moderate instructor)");
         gaeSimulation.loginAsInstructor(moderatedInstructor.googleId);
         feedbackSessionName = "First feedback session";
@@ -90,7 +93,7 @@ public class InstructorEditInstructorFeedbackPageActionTest extends BaseActionTe
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, feedbackSessionName,
                 Const.ParamsNames.FEEDBACK_SESSION_MODERATED_PERSON, moderatedInstructorEmail
         };
-        
+
         try {
             editInstructorFpAction = getAction(submissionParams);
             editInstructorFpAction.executeAndPostProcess();
@@ -109,7 +112,7 @@ public class InstructorEditInstructorFeedbackPageActionTest extends BaseActionTe
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, feedbackSessionName,
                 Const.ParamsNames.FEEDBACK_SESSION_MODERATED_PERSON, moderatedInstructorEmail
         };
-        
+
         try {
             editInstructorFpAction = getAction(submissionParams);
             editInstructorFpAction.executeAndPostProcess();

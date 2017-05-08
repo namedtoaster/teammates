@@ -6,48 +6,52 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-import teammates.common.datatransfer.attributes.StudentAttributes;
 import teammates.common.datatransfer.StudentUpdateStatus;
+import teammates.common.datatransfer.attributes.StudentAttributes;
 import teammates.common.util.Config;
 import teammates.common.util.Const;
 import teammates.common.util.FieldValidator;
 import teammates.common.util.StringHelper;
 import teammates.storage.entity.CourseStudent;
 import teammates.test.cases.BaseTestCase;
+import teammates.test.driver.StringHelperExtension;
 
+/**
+ * SUT: {@link StudentAttributes}.
+ */
 public class StudentAttributesTest extends BaseTestCase {
 
     private static class StudentAttributesWithModifiableTimestamp extends StudentAttributes {
-        
-        private void setCreatedAt(Date createdAt) {
+
+        void setCreatedAt(Date createdAt) {
             this.createdAt = createdAt;
         }
-        
-        private void setUpdatedAt(Date updatedAt) {
+
+        void setUpdatedAt(Date updatedAt) {
             this.updatedAt = updatedAt;
         }
-        
+
     }
-    
+
     @Test
     public void testDefaultTimestamp() {
-        
+
         StudentAttributesWithModifiableTimestamp s = new StudentAttributesWithModifiableTimestamp();
-        
+
         s.setCreatedAt(null);
         s.setUpdatedAt(null);
-        
+
         Date defaultStudentCreationTimeStamp = Const.TIME_REPRESENTS_DEFAULT_TIMESTAMP;
-        
+
         ______TS("success : defaultTimeStamp for createdAt date");
-        
+
         assertEquals(defaultStudentCreationTimeStamp, s.getCreatedAt());
-        
+
         ______TS("success : defaultTimeStamp for updatedAt date");
-        
+
         assertEquals(defaultStudentCreationTimeStamp, s.getUpdatedAt());
     }
-    
+
     @Test
     public void testUpdateStatusEnum() {
         assertEquals(StudentUpdateStatus.ERROR, StudentUpdateStatus.enumRepresentation(0));
@@ -79,7 +83,6 @@ public class StudentAttributesTest extends BaseTestCase {
                                                  "courseId1", "team 1", "section 1");
 
         verifyStudentContentIncludingId(expected, (CourseStudent) studentUnderTest.toEntity());
-
 
         ______TS("Typical case: initialize from entity");
         expected = generateTypicalStudentObject();
@@ -125,7 +128,7 @@ public class StudentAttributesTest extends BaseTestCase {
                      invalidStudent.getInvalidityInfo().get(0));
 
         ______TS("Failure case: section name too long");
-        String longSectionName = StringHelper
+        String longSectionName = StringHelperExtension
                 .generateStringOfLength(FieldValidator.SECTION_NAME_MAX_LENGTH + 1);
         invalidStudent = new StudentAttributes(longSectionName, "t1", "n", "e@e.com", "c", courseId);
         assertFalse(invalidStudent.isValid());
@@ -136,7 +139,7 @@ public class StudentAttributesTest extends BaseTestCase {
                      invalidStudent.getInvalidityInfo().get(0));
 
         ______TS("Failure case: team name too long");
-        String longTeamName = StringHelper.generateStringOfLength(FieldValidator.TEAM_NAME_MAX_LENGTH + 1);
+        String longTeamName = StringHelperExtension.generateStringOfLength(FieldValidator.TEAM_NAME_MAX_LENGTH + 1);
         invalidStudent = new StudentAttributes("sect", longTeamName, "name", "e@e.com", "c", courseId);
         assertFalse(invalidStudent.isValid());
         assertEquals(getPopulatedErrorMessage(
@@ -146,7 +149,7 @@ public class StudentAttributesTest extends BaseTestCase {
                      invalidStudent.getInvalidityInfo().get(0));
 
         ______TS("Failure case: student name too long");
-        String longStudentName = StringHelper
+        String longStudentName = StringHelperExtension
                 .generateStringOfLength(FieldValidator.PERSON_NAME_MAX_LENGTH + 1);
         invalidStudent = new StudentAttributes("sect", "t1", longStudentName, "e@e.com", "c", courseId);
         assertFalse(invalidStudent.isValid());
@@ -166,7 +169,7 @@ public class StudentAttributesTest extends BaseTestCase {
                      invalidStudent.getInvalidityInfo().get(0));
 
         ______TS("Failure case: comment too long");
-        String longComment = StringHelper
+        String longComment = StringHelperExtension
                 .generateStringOfLength(FieldValidator.STUDENT_ROLE_COMMENTS_MAX_LENGTH + 1);
         invalidStudent = new StudentAttributes("sect", "t1", "name", "e@e.com", longComment, courseId);
         assertFalse(invalidStudent.isValid());
@@ -191,8 +194,8 @@ public class StudentAttributesTest extends BaseTestCase {
         s.name = "";
         s.email = "invalid email";
         s.course = "";
-        s.comments = StringHelper.generateStringOfLength(FieldValidator.STUDENT_ROLE_COMMENTS_MAX_LENGTH + 1);
-        s.team = StringHelper.generateStringOfLength(FieldValidator.TEAM_NAME_MAX_LENGTH + 1);
+        s.comments = StringHelperExtension.generateStringOfLength(FieldValidator.STUDENT_ROLE_COMMENTS_MAX_LENGTH + 1);
+        s.team = StringHelperExtension.generateStringOfLength(FieldValidator.TEAM_NAME_MAX_LENGTH + 1);
 
         assertFalse("invalid value", s.isValid());
         String errorMessage =
@@ -394,12 +397,12 @@ public class StudentAttributesTest extends BaseTestCase {
         assertEquals(expected.getEmail(), actual.getEmail());
         assertEquals(expected.getComments(), actual.getComments());
     }
-    
+
     private void verifyStudentContentIncludingId(CourseStudent expected, CourseStudent actual) {
         verifyStudentContent(expected, actual);
         assertEquals(expected.getGoogleId(), actual.getGoogleId());
     }
-    
+
     private StudentAttributes generateValidStudentAttributesObject() {
         StudentAttributes s = new StudentAttributes();
         s.googleId = "valid.google.id";

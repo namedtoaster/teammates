@@ -8,19 +8,22 @@ import teammates.ui.controller.AdminAccountDetailsPageAction;
 import teammates.ui.controller.ShowPageResult;
 import teammates.ui.pagedata.AdminAccountDetailsPageData;
 
+/**
+ * SUT: {@link AdminAccountDetailsPageAction}.
+ */
 public class AdminAccountDetailsPageActionTest extends BaseActionTest {
 
     @Override
     protected String getActionUri() {
         return Const.ActionURIs.ADMIN_ACCOUNT_DETAILS_PAGE;
     }
-    
+
     @Override
     @Test
     public void testExecuteAndPostProcess() {
-        
+
         ______TS("case: view instructor account details");
-        
+
         InstructorAttributes instructor1OfCourse1 = dataBundle.instructors.get("instructor1OfCourse1");
 
         String[] submissionParams = new String[] {
@@ -40,7 +43,7 @@ public class AdminAccountDetailsPageActionTest extends BaseActionTest {
 
         AdminAccountDetailsPageData data = (AdminAccountDetailsPageData) result.data;
         assertEquals(instructor1OfCourse1.googleId, data.getAccountInformation().googleId);
-                
+
     }
 
     @Override

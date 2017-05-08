@@ -10,6 +10,9 @@ import org.testng.annotations.Test;
 import teammates.common.util.AdminLogQuery;
 import teammates.test.cases.BaseTestCase;
 
+/**
+ * SUT: {@link AdminLogQuery}.
+ */
 public class AdminLogQueryTest extends BaseTestCase {
     @Test
     public void testAdminLogQuery() {
@@ -24,18 +27,18 @@ public class AdminLogQueryTest extends BaseTestCase {
         assertEquals(startTime, query.getStartTime());
         assertEquals(endTime, query.getEndTime());
         assertNotNull(query.getQuery());
-        
+
         ______TS("Test setTimePeriod");
         query = new AdminLogQuery(versionList, null, null);
         assertEquals(0, query.getStartTime());
         assertTrue(endTime != query.getStartTime());
-        
+
         query.setTimePeriod(startTime, endTime);
         assertEquals(startTime, query.getStartTime());
         assertEquals(endTime, query.getEndTime());
         assertNotNull(query.getQuery());
     }
-    
+
     @Test
     public void testSetQueryWindowBackward() {
         List<String> versionList = new ArrayList<String>();
@@ -51,7 +54,7 @@ public class AdminLogQueryTest extends BaseTestCase {
         long expectedStartTime = expectedEndTime - fourHours;
         assertEquals(expectedStartTime, query.getStartTime());
         assertEquals(expectedEndTime, query.getEndTime());
-        
+
         assertEquals(expectedStartTime, query.getQuery().getStartTimeMillis().longValue());
         assertEquals(expectedEndTime, query.getQuery().getEndTimeMillis().longValue());
     }

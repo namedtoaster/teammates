@@ -5,17 +5,16 @@ import java.util.List;
 import teammates.common.datatransfer.attributes.InstructorAttributes;
 import teammates.common.util.Const;
 
-import com.google.appengine.api.search.Document;
-
 /**
- * The {@link SearchQuery} object that defines how we query {@link Document} for student comments.
+ * The {@link SearchQuery} object that defines how we query
+ * {@link com.google.appengine.api.search.Document} for student comments.
  */
 public class CommentSearchQuery extends SearchQuery {
-    
+
     public CommentSearchQuery(List<InstructorAttributes> instructors, String queryString) {
         super(instructors, queryString);
     }
-    
+
     @Override
     protected String prepareVisibilityQueryString(List<InstructorAttributes> instructors) {
         StringBuilder courseIdLimit = new StringBuilder("(");
@@ -32,5 +31,5 @@ public class CommentSearchQuery extends SearchQuery {
                 + AND + "(" + Const.SearchDocumentField.GIVER_EMAIL + ":" + giverEmailLimit.toString()
                           + OR + Const.SearchDocumentField.IS_VISIBLE_TO_INSTRUCTOR + ":true)";
     }
-    
+
 }

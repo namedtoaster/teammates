@@ -14,8 +14,7 @@ import teammates.test.pageobjects.StudentCourseJoinConfirmationPage;
 import teammates.test.pageobjects.StudentFeedbackResultsPage;
 
 /**
- * Tests 'Feedback Results' view of students.
- * SUT: {@link StudentFeedbackResultsPage}.
+ * SUT: {@link Const.ActionURIs#STUDENT_FEEDBACK_RESULTS_PAGE}.
  */
 public class StudentFeedbackResultsPageUiTest extends BaseUiTestCase {
     private StudentFeedbackResultsPage resultsPage;
@@ -32,7 +31,7 @@ public class StudentFeedbackResultsPageUiTest extends BaseUiTestCase {
         ______TS("unreg student");
 
         logout();
-        
+
         // Open Session
         StudentAttributes unreg = testData.students.get("DropOut");
         resultsPage = loginToStudentFeedbackResultsPage(unreg, "Open Session", StudentFeedbackResultsPage.class);
@@ -103,17 +102,16 @@ public class StudentFeedbackResultsPageUiTest extends BaseUiTestCase {
         resultsPage = loginToStudentFeedbackResultsPage("Alice", "CONSTSUM Session");
         resultsPage.verifyHtmlMainContent("/studentFeedbackResultsPageCONSTSUM.html");
 
-
         ______TS("CONTRIB session results");
 
         resultsPage = loginToStudentFeedbackResultsPage("Alice", "CONTRIB Session");
         resultsPage.verifyHtmlMainContent("/studentFeedbackResultsPageCONTRIB.html");
 
         ______TS("unreg student logged in as a student in another course: registered after logging out");
-        
+
         String student1Username = TestProperties.TEST_STUDENT1_ACCOUNT;
         String student1Password = TestProperties.TEST_STUDENT1_PASSWORD;
-        
+
         logout();
         LoginPage loginPage = AppPage.getNewPageInstance(browser, HomePage.class).clickStudentLogin();
         loginPage.loginAsStudent(student1Username, student1Password);
@@ -125,11 +123,11 @@ public class StudentFeedbackResultsPageUiTest extends BaseUiTestCase {
         loginPage.loginAsStudent(student1Username, student1Password, StudentFeedbackResultsPage.class);
 
         resultsPage.verifyHtmlMainContent("/studentFeedbackResultsPageNewlyRegistered.html");
-        
+
         BackDoor.editStudent(unreg.email, unreg); // clear the googleId
-        
+
         ______TS("unreg student logged in as a student in another course: registered without logging out");
-        
+
         logout();
         loginPage = AppPage.getNewPageInstance(browser, HomePage.class).clickStudentLogin();
         loginPage.loginAsStudent(student1Username, student1Password);
@@ -140,7 +138,7 @@ public class StudentFeedbackResultsPageUiTest extends BaseUiTestCase {
         resultsPage = confirmationPage.clickConfirmButton(StudentFeedbackResultsPage.class);
 
         resultsPage.verifyHtmlMainContent("/studentFeedbackResultsPageNewlyRegistered.html");
-        
+
         BackDoor.deleteStudent(unreg.course, unreg.email);
     }
 
@@ -162,13 +160,13 @@ public class StudentFeedbackResultsPageUiTest extends BaseUiTestCase {
                                             .withRegistrationKey(BackDoor.getEncryptedKeyForStudent(s.course, s.email));
         return AppPage.getNewPageInstance(browser, submitUrl, typeOfPage);
     }
-    
+
     private void verifyQuestionAdditionalInfoCollapse(int qnNumber, String additionalInfoId) {
         resultsPage.clickQuestionAdditionalInfoButton(qnNumber, additionalInfoId);
         assertFalse(resultsPage.isQuestionAdditionalInfoVisible(qnNumber, additionalInfoId));
         assertEquals("[more]", resultsPage.getQuestionAdditionalInfoButtonText(qnNumber, additionalInfoId));
     }
-    
+
     private void verifyQuestionAdditionalInfoExpand(int qnNumber, String additionalInfoId) {
         resultsPage.clickQuestionAdditionalInfoButton(qnNumber, additionalInfoId);
         assertTrue(resultsPage.isQuestionAdditionalInfoVisible(qnNumber, additionalInfoId));

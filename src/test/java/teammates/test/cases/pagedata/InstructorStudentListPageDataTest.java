@@ -16,6 +16,9 @@ import teammates.ui.template.InstructorStudentListFilterCourse;
 import teammates.ui.template.InstructorStudentListSearchBox;
 import teammates.ui.template.InstructorStudentListStudentsTableCourse;
 
+/**
+ * SUT: {@link InstructorStudentListPageData}.
+ */
 public class InstructorStudentListPageDataTest extends BaseTestCase {
 
     private InstructorStudentListPageData islpd;
@@ -36,7 +39,7 @@ public class InstructorStudentListPageDataTest extends BaseTestCase {
         testFilterBox(islpd.getFilterBox());
         testStudentsTable(islpd.getStudentsTable());
         testNumOfCourses(islpd.getNumOfCourses());
-        
+
         islpd = initializeDataWithNoSearchKey();
         testNullSearchKeyHandler(islpd);
     }
@@ -59,12 +62,12 @@ public class InstructorStudentListPageDataTest extends BaseTestCase {
                                                                      isInstructorAllowedToModify));
         return new InstructorStudentListPageData(acct, searchKey, displayArchive, coursesToDisplay);
     }
-    
+
     private InstructorStudentListPageData initializeDataWithNoSearchKey() {
         searchKey = null;
         return new InstructorStudentListPageData(acct, searchKey, displayArchive, coursesToDisplay);
     }
-    
+
     private void testSearchBox(InstructorStudentListSearchBox searchBox) {
         assertEquals(acct.googleId, searchBox.getGoogleId());
         assertEquals(SanitizationHelper.sanitizeForHtml(searchKey), searchBox.getSearchKey());

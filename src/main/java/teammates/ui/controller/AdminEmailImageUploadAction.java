@@ -1,13 +1,13 @@
 package teammates.ui.controller;
 
+import com.google.appengine.api.blobstore.BlobKey;
+
 import teammates.common.util.Const;
 import teammates.ui.pagedata.AdminEmailComposePageData;
 import teammates.ui.pagedata.FileUploadPageData;
 
-import com.google.appengine.api.blobstore.BlobKey;
-
 /**
- * Action: uploads an image for admin email
+ * Action: uploads an image for admin email.
  */
 public class AdminEmailImageUploadAction extends ImageUploadAction {
 

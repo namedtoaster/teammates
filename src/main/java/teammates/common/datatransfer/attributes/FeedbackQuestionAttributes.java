@@ -7,6 +7,8 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.appengine.api.datastore.Text;
+
 import teammates.common.datatransfer.FeedbackParticipantType;
 import teammates.common.datatransfer.questions.FeedbackQuestionDetails;
 import teammates.common.datatransfer.questions.FeedbackQuestionType;
@@ -17,15 +19,14 @@ import teammates.common.util.JsonUtils;
 import teammates.common.util.SanitizationHelper;
 import teammates.storage.entity.FeedbackQuestion;
 
-import com.google.appengine.api.datastore.Text;
-
 public class FeedbackQuestionAttributes extends EntityAttributes implements Comparable<FeedbackQuestionAttributes> {
     public String feedbackSessionName;
     public String courseId;
     public String creatorEmail;
-    /** 
-     * Contains the JSON formatted string that holds the information of the question details <br>
-     * Don't use directly unless for storing/loading from data store <br>
+    /**
+     * Contains the JSON formatted string that holds the information of the question details.
+     *
+     * <p>Don't use directly unless for storing/loading from data store.<br>
      * To get the question text use {@code getQuestionDetails().questionText}
      */
     public Text questionMetaData;
@@ -61,10 +62,10 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
         this.showResponsesTo = new ArrayList<FeedbackParticipantType>(fq.getShowResponsesTo());
         this.showGiverNameTo = new ArrayList<FeedbackParticipantType>(fq.getShowGiverNameTo());
         this.showRecipientNameTo = new ArrayList<FeedbackParticipantType>(fq.getShowRecipientNameTo());
-        
+
         this.createdAt = fq.getCreatedAt();
         this.updatedAt = fq.getUpdatedAt();
-        
+
         removeIrrelevantVisibilityOptions();
     }
 
@@ -82,13 +83,13 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
         this.showResponsesTo = new ArrayList<FeedbackParticipantType>(other.getShowResponsesTo());
         this.showGiverNameTo = new ArrayList<FeedbackParticipantType>(other.getShowGiverNameTo());
         this.showRecipientNameTo = new ArrayList<FeedbackParticipantType>(other.getShowRecipientNameTo());
-        
+
         this.createdAt = other.getCreatedAt();
         this.updatedAt = other.getUpdatedAt();
-        
+
         removeIrrelevantVisibilityOptions();
     }
-    
+
     public FeedbackQuestionAttributes getCopy() {
         return new FeedbackQuestionAttributes(this);
     }
@@ -96,11 +97,11 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
     public Date getCreatedAt() {
         return createdAt == null ? Const.TIME_REPRESENTS_DEFAULT_TIMESTAMP : createdAt;
     }
-    
+
     public Date getUpdatedAt() {
         return updatedAt == null ? Const.TIME_REPRESENTS_DEFAULT_TIMESTAMP : updatedAt;
     }
-    
+
     public String getId() {
         return feedbackQuestionId;
     }
@@ -158,22 +159,20 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
     public List<String> getInvalidityInfo() {
         FieldValidator validator = new FieldValidator();
         List<String> errors = new ArrayList<String>();
-        String error;
 
-        error = validator.getInvalidityInfoForFeedbackSessionName(feedbackSessionName);
-        if (!error.isEmpty()) {
-            errors.add(error);
-        }
+        addNonEmptyError(validator.getInvalidityInfoForFeedbackSessionName(feedbackSessionName), errors);
 
-        error = validator.getInvalidityInfoForCourseId(courseId);
-        if (!error.isEmpty()) {
-            errors.add(error);
-        }
+        addNonEmptyError(validator.getInvalidityInfoForCourseId(courseId), errors);
 
-        error = validator.getInvalidityInfoForEmail(creatorEmail);
+        // special case when additional text should be added to error text
+        String error = validator.getInvalidityInfoForEmail(creatorEmail);
         if (!error.isEmpty()) {
-            errors.add("Invalid creator's email: " + error);
+            error = new StringBuffer()
+                    .append("Invalid creator's email: ")
+                    .append(error)
+                    .toString();
         }
+        addNonEmptyError(error, errors);
 
         errors.addAll(validator.getValidityInfoForFeedbackParticipantType(giverType, recipientType));
 
@@ -238,7 +237,7 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
                     }
                 } else {
                     line.append(", but not the name of the recipient");
-                    
+
                     if (!showGiverNameTo.contains(participant)) {
                         line.append(", or your name");
                     }
@@ -287,9 +286,6 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
      * Checks if updating this question to the {@code newAttributes} will
      * require the responses to be deleted for consistency.
      * Does not check if any responses exist.
-     * 
-     * @param newAttributes
-     * @return
      */
     public boolean areResponseDeletionsRequiredForChanges(FeedbackQuestionAttributes newAttributes) {
         if (!newAttributes.giverType.equals(this.giverType)
@@ -311,7 +307,7 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
         if (o == null) {
             return 1;
         }
-        
+
         if (this.questionNumber != o.questionNumber) {
             return Integer.compare(this.questionNumber, o.questionNumber);
         }
@@ -510,14 +506,8 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
             optionsToRemove.add(FeedbackParticipantType.RECEIVER_TEAM_MEMBERS);
             break;
         case TEAMS:
-            optionsToRemove.add(FeedbackParticipantType.RECEIVER_TEAM_MEMBERS);
-            break;
         case INSTRUCTORS:
-            optionsToRemove.add(FeedbackParticipantType.RECEIVER_TEAM_MEMBERS);
-            break;
         case OWN_TEAM:
-            optionsToRemove.add(FeedbackParticipantType.RECEIVER_TEAM_MEMBERS);
-            break;
         case OWN_TEAM_MEMBERS:
             optionsToRemove.add(FeedbackParticipantType.RECEIVER_TEAM_MEMBERS);
             break;
@@ -527,8 +517,6 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
 
         switch (giverType) {
         case TEAMS:
-            optionsToRemove.add(FeedbackParticipantType.OWN_TEAM_MEMBERS);
-            break;
         case INSTRUCTORS:
             optionsToRemove.add(FeedbackParticipantType.OWN_TEAM_MEMBERS);
             break;
@@ -549,7 +537,7 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
     public void sanitizeForSaving() {
         this.questionDescription = SanitizationHelper.sanitizeForRichText(this.questionDescription);
     }
-    
+
     private boolean isValidJsonString(String jsonString) {
         try {
             new JSONObject(jsonString);
@@ -558,19 +546,17 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
         }
         return true;
     }
-    
-    /** 
-     * This method converts the given Feedback*QuestionDetails object to JSON for storing
-     * 
-     * @param questionDetails
+
+    /**
+     * Converts the given Feedback*QuestionDetails object to JSON for storing.
      */
     public void setQuestionDetails(FeedbackQuestionDetails questionDetails) {
         questionMetaData = new Text(JsonUtils.toJson(questionDetails, getFeedbackQuestionDetailsClass()));
     }
 
-    /** 
-     * This method retrieves the Feedback*QuestionDetails object for this question
-     * 
+    /**
+     * Retrieves the Feedback*QuestionDetails object for this question.
+     *
      * @return The Feedback*QuestionDetails object representing the question's details
      */
     public FeedbackQuestionDetails getQuestionDetails() {
@@ -582,9 +568,9 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
         return JsonUtils.fromJson(questionMetaDataValue, getFeedbackQuestionDetailsClass());
     }
 
-    /** 
+    /**
      * This method gets the appropriate class type for the Feedback*QuestionDetails object for this question.
-     * 
+     *
      * @return The Feedback*QuestionDetails class type appropriate for this question.
      */
     private Class<? extends FeedbackQuestionDetails> getFeedbackQuestionDetailsClass() {
@@ -654,5 +640,5 @@ public class FeedbackQuestionAttributes extends EntityAttributes implements Comp
     public String getQuestionAdditionalInfoHtml() {
         return getQuestionDetails().getQuestionAdditionalInfoHtml(questionNumber, "");
     }
-    
+
 }

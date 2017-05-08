@@ -14,13 +14,16 @@ import teammates.storage.api.FeedbackSessionsDb;
 import teammates.ui.controller.InstructorFeedbackUnpublishAction;
 import teammates.ui.controller.RedirectResult;
 
+/**
+ * SUT: {@link InstructorFeedbackUnpublishAction}.
+ */
 public class InstructorFeedbackUnpublishActionTest extends BaseActionTest {
 
     @Override
     protected String getActionUri() {
         return Const.ActionURIs.INSTRUCTOR_FEEDBACK_UNPUBLISH;
     }
-    
+
     @Override
     @Test
     public void testExecuteAndPostProcess() throws Exception {
@@ -50,9 +53,9 @@ public class InstructorFeedbackUnpublishActionTest extends BaseActionTest {
         assertEquals(expectedDestination, result.getDestinationWithParams());
         assertEquals(Const.StatusMessages.FEEDBACK_SESSION_UNPUBLISHED, result.getStatusMessage());
         assertFalse(result.isError);
-        
+
         verifySpecifiedTasksAdded(unpublishAction, Const.TaskQueue.FEEDBACK_SESSION_UNPUBLISHED_EMAIL_QUEUE_NAME, 1);
-        
+
         TaskWrapper taskAdded = unpublishAction.getTaskQueuer().getTasksAdded().get(0);
         Map<String, String[]> paramMap = taskAdded.getParamMap();
         assertEquals(session.getCourseId(), paramMap.get(ParamsNames.EMAIL_COURSE)[0]);
@@ -99,7 +102,7 @@ public class InstructorFeedbackUnpublishActionTest extends BaseActionTest {
         assertEquals("Error unpublishing feedback session: Session has already been unpublished.",
                      result.getStatusMessage());
         assertTrue(result.isError);
-        
+
         verifyNoTasksAdded(unpublishAction);
 
         makeFeedbackSessionPublished(session);

@@ -7,20 +7,23 @@ import java.util.List;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import teammates.common.datatransfer.attributes.StudentProfileAttributes;
-import teammates.common.util.FieldValidator;
-import teammates.common.util.SanitizationHelper;
-import teammates.common.util.StringHelper;
-import teammates.storage.entity.StudentProfile;
-import teammates.test.cases.BaseTestCase;
-import teammates.test.driver.AssertHelper;
-
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Text;
 
+import teammates.common.datatransfer.attributes.StudentProfileAttributes;
+import teammates.common.util.FieldValidator;
+import teammates.common.util.SanitizationHelper;
+import teammates.storage.entity.StudentProfile;
+import teammates.test.cases.BaseTestCase;
+import teammates.test.driver.AssertHelper;
+import teammates.test.driver.StringHelperExtension;
+
+/**
+ * SUT: {@link StudentProfileAttributes}.
+ */
 public class StudentProfileAttributesTest extends BaseTestCase {
 
-    private static StudentProfileAttributes profile;
+    private StudentProfileAttributes profile;
 
     @BeforeClass
     public void classSetup() {
@@ -72,11 +75,11 @@ public class StudentProfileAttributesTest extends BaseTestCase {
     @Test
     public void testGetInvalidityInfo() throws Exception {
         testGetInvalidityInfoForValidProfileWithValues();
-        testGetInvalidtyInfoForValidProfileWithEmptyValues();
+        testGetInvalidityInfoForValidProfileWithEmptyValues();
         testInvalidityInfoForInvalidProfile();
     }
 
-    protected void testGetInvalidityInfoForValidProfileWithValues() {
+    private void testGetInvalidityInfoForValidProfileWithValues() {
         StudentProfileAttributes validProfile = createNewProfileAttributesFrom(profile);
 
         ______TS("Typical case: valid profile attributes");
@@ -84,7 +87,7 @@ public class StudentProfileAttributesTest extends BaseTestCase {
         assertEquals(new ArrayList<String>(), validProfile.getInvalidityInfo());
     }
 
-    protected void testGetInvalidtyInfoForValidProfileWithEmptyValues() {
+    private void testGetInvalidityInfoForValidProfileWithEmptyValues() {
         StudentProfileAttributes validProfile = createNewProfileAttributesFrom(profile);
 
         ______TS("Typical case: valid profile with empty attributes");
@@ -97,7 +100,7 @@ public class StudentProfileAttributesTest extends BaseTestCase {
         assertEquals(new ArrayList<String>(), validProfile.getInvalidityInfo());
     }
 
-    protected void testInvalidityInfoForInvalidProfile() throws Exception {
+    private void testInvalidityInfoForInvalidProfile() throws Exception {
         StudentProfileAttributes invalidProfile = getInvalidStudentProfileAttributes();
 
         ______TS("Failure case: invalid profile attributes");
@@ -200,10 +203,10 @@ public class StudentProfileAttributesTest extends BaseTestCase {
     }
 
     private StudentProfileAttributes getInvalidStudentProfileAttributes() {
-        String googleId = StringHelper.generateStringOfLength(46);
+        String googleId = StringHelperExtension.generateStringOfLength(46);
         String shortName = "%%";
         String email = "invalid@email@com";
-        String institute = StringHelper.generateStringOfLength(FieldValidator.INSTITUTE_NAME_MAX_LENGTH + 1);
+        String institute = StringHelperExtension.generateStringOfLength(FieldValidator.INSTITUTE_NAME_MAX_LENGTH + 1);
         String nationality = "$invalid nationality ";
         String gender = "invalidGender";
         String moreInfo = "Ooops no validation for this one...";

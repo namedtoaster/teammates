@@ -9,25 +9,28 @@ import java.io.IOException;
 import java.util.Scanner;
 
 /**
- * File-related helper methods used for testing. There is another FileHelper on
- * the server side.
+ * File-related helper methods used for testing.
  */
 public final class FileHelper {
-    
+
     private FileHelper() {
         // utility class
     }
-    
+
     /**
      * Reads the file with the specified path as a String.
      */
     public static String readFile(String filePath) throws IOException {
-        Scanner sc = new Scanner(new BufferedReader(new FileReader(filePath)));
-        String result = sc.useDelimiter("\\Z").next();
-        sc.close();
-        return result;
+        BufferedReader br = new BufferedReader(new FileReader(filePath));
+        Scanner sc = new Scanner(br);
+        try {
+            return sc.useDelimiter("\\Z").next();
+        } finally {
+            sc.close();
+            br.close();
+        }
     }
-    
+
     /**
      * Reads the file with the specified path as a byte array.
      */
@@ -38,7 +41,7 @@ public final class FileHelper {
         fis.close();
         return buffer;
     }
-    
+
     /**
      * Saves the supplied content to the specified file path.
      */
@@ -47,7 +50,7 @@ public final class FileHelper {
         fw.write(content);
         fw.close();
     }
-    
+
     /**
      * Deletes the file with the specified path.
      */

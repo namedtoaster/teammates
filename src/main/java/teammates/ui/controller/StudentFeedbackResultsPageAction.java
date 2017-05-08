@@ -57,14 +57,14 @@ public class StudentFeedbackResultsPageAction extends Action {
         statusToAdmin = "Show student feedback result page<br>"
                         + "Session Name: " + feedbackSessionName + "<br>"
                         + "Course ID: " + courseId;
-        
+
         Map<FeedbackQuestionAttributes, List<FeedbackResponseAttributes>> questionsWithResponses =
                                         data.getBundle().getQuestionResponseMapSortedByRecipient();
         data.init(questionsWithResponses);
         return createShowPageResult(Const.ViewURIs.STUDENT_FEEDBACK_RESULTS, data);
     }
 
-    protected StudentAttributes getCurrentStudent(String courseId) {
+    private StudentAttributes getCurrentStudent(String courseId) {
         if (student == null) {
             return logic.getStudentForGoogleId(courseId, account.googleId);
         }

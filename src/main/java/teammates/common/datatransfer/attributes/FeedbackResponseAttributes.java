@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import com.google.appengine.api.datastore.Text;
+
 import teammates.common.datatransfer.questions.FeedbackQuestionType;
 import teammates.common.datatransfer.questions.FeedbackResponseDetails;
 import teammates.common.datatransfer.questions.FeedbackTextResponseDetails;
@@ -13,8 +15,6 @@ import teammates.common.util.Const;
 import teammates.common.util.FieldValidator;
 import teammates.common.util.JsonUtils;
 import teammates.storage.entity.FeedbackResponse;
-
-import com.google.appengine.api.datastore.Text;
 
 public class FeedbackResponseAttributes extends EntityAttributes {
     public String feedbackSessionName;
@@ -31,12 +31,12 @@ public class FeedbackResponseAttributes extends EntityAttributes {
      * name, "%GENERAL%", etc.
      */
     public String recipient;
-    
+
     /** Contains the JSON formatted string that holds the information of the response details <br>
      * Don't use directly unless for storing/loading from data store <br>
      * To get the answer text use {@code getResponseDetails().getAnswerString()}
-     * 
-     * This is set to null to represent a missing response.
+     *
+     * <p>This is set to null to represent a missing response.
      */
     public Text responseMetaData;
     public String giverSection;
@@ -44,11 +44,11 @@ public class FeedbackResponseAttributes extends EntityAttributes {
     protected transient Date createdAt;
     protected transient Date updatedAt;
     private String feedbackResponseId;
-    
+
     public FeedbackResponseAttributes() {
         // attributes to be set after construction
     }
-    
+
     public FeedbackResponseAttributes(String feedbackSessionName,
             String courseId, String feedbackQuestionId,
             FeedbackQuestionType feedbackQuestionType, String giverEmail, String giverSection,
@@ -78,7 +78,7 @@ public class FeedbackResponseAttributes extends EntityAttributes {
         this.createdAt = fr.getCreatedAt();
         this.updatedAt = fr.getUpdatedAt();
     }
-    
+
     public FeedbackResponseAttributes(FeedbackResponseAttributes copy) {
         this.feedbackResponseId = copy.getId();
         this.feedbackSessionName = copy.feedbackSessionName;
@@ -97,11 +97,11 @@ public class FeedbackResponseAttributes extends EntityAttributes {
     public String getId() {
         return feedbackResponseId;
     }
-    
+
     public void setId(String feedbackResponseId) {
         this.feedbackResponseId = feedbackResponseId;
     }
-    
+
     public Date getCreatedAt() {
         return createdAt == null ? Const.TIME_REPRESENTS_DEFAULT_TIMESTAMP : createdAt;
     }
@@ -109,44 +109,37 @@ public class FeedbackResponseAttributes extends EntityAttributes {
     public Date getUpdatedAt() {
         return updatedAt == null ? Const.TIME_REPRESENTS_DEFAULT_TIMESTAMP : updatedAt;
     }
-    
+
     @Override
     public List<String> getInvalidityInfo() {
-        
+
         FieldValidator validator = new FieldValidator();
         List<String> errors = new ArrayList<String>();
-        String error;
-        
-        error = validator.getInvalidityInfoForFeedbackSessionName(feedbackSessionName);
-        if (!error.isEmpty()) {
-            errors.add(error);
-        }
-        
-        error = validator.getInvalidityInfoForCourseId(courseId);
-        if (!error.isEmpty()) {
-            errors.add(error);
-        }
-        
+
+        addNonEmptyError(validator.getInvalidityInfoForFeedbackSessionName(feedbackSessionName), errors);
+
+        addNonEmptyError(validator.getInvalidityInfoForCourseId(courseId), errors);
+
         return errors;
     }
-    
+
     @Override
     public boolean isValid() {
         return getInvalidityInfo().isEmpty();
     }
-    
+
     @Override
     public FeedbackResponse toEntity() {
         return new FeedbackResponse(feedbackSessionName, courseId,
                 feedbackQuestionId, feedbackQuestionType,
                 giver, giverSection, recipient, recipientSection, responseMetaData);
     }
-    
+
     @Override
     public String getIdentificationString() {
         return feedbackQuestionId + "/" + giver + ":" + recipient;
     }
-    
+
     @Override
     public String getEntityTypeAsString() {
         return "Feedback Response";
@@ -156,7 +149,7 @@ public class FeedbackResponseAttributes extends EntityAttributes {
     public String getBackupIdentifier() {
         return Const.SystemParams.COURSE_BACKUP_LOG_MSG + courseId;
     }
-    
+
     @Override
     public String toString() {
         return "FeedbackResponseAttributes [feedbackSessionName="
@@ -171,14 +164,14 @@ public class FeedbackResponseAttributes extends EntityAttributes {
     public String getJsonString() {
         return JsonUtils.toJson(this, FeedbackResponseAttributes.class);
     }
-    
+
     @Override
     public void sanitizeForSaving() {
         // nothing to sanitize before saving
     }
-    
-    /** This method converts the given Feedback*ResponseDetails object to JSON for storing
-     * @param responseDetails
+
+    /**
+     * Converts the given Feedback*ResponseDetails object to JSON for storing.
      */
     public void setResponseDetails(FeedbackResponseDetails responseDetails) {
         if (responseDetails == null) {
@@ -192,18 +185,19 @@ public class FeedbackResponseAttributes extends EntityAttributes {
             responseMetaData = new Text(JsonUtils.toJson(responseDetails, getFeedbackResponseDetailsClass()));
         }
     }
-    
-    /** This method retrieves the Feedback*ResponseDetails object for this response
+
+    /**
+     * Retrieves the Feedback*ResponseDetails object for this response.
      * @return The Feedback*ResponseDetails object representing the response's details
      */
     public FeedbackResponseDetails getResponseDetails() {
-        
+
         if (isMissingResponse()) {
             return null;
         }
-        
+
         Class<? extends FeedbackResponseDetails> responseDetailsClass = getFeedbackResponseDetailsClass();
-        
+
         if (responseDetailsClass == FeedbackTextResponseDetails.class) {
             // For Text questions, the questionText simply contains the question, not a JSON
             // This is due to legacy data in the data store before there are multiple question types
@@ -211,7 +205,7 @@ public class FeedbackResponseAttributes extends EntityAttributes {
         }
         return JsonUtils.fromJson(responseMetaData.getValue(), responseDetailsClass);
     }
-    
+
     /** This method gets the appropriate class type for the Feedback*ResponseDetails object
      * for this response.
      * @return The Feedback*ResponseDetails class type appropriate for this response.
@@ -219,7 +213,7 @@ public class FeedbackResponseAttributes extends EntityAttributes {
     private Class<? extends FeedbackResponseDetails> getFeedbackResponseDetailsClass() {
         return feedbackQuestionType.getResponseDetailsClass();
     }
-    
+
     /**
      * Checks if this object represents a missing response.
      * A missing response should never be written to the database.
@@ -228,7 +222,7 @@ public class FeedbackResponseAttributes extends EntityAttributes {
     public boolean isMissingResponse() {
         return responseMetaData == null;
     }
-    
+
     public static void sortFeedbackResponses(List<FeedbackResponseAttributes> frs) {
         Collections.sort(frs, new Comparator<FeedbackResponseAttributes>() {
             @Override
@@ -237,5 +231,5 @@ public class FeedbackResponseAttributes extends EntityAttributes {
             }
         });
     }
-    
+
 }

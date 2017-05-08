@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.google.appengine.api.datastore.Text;
+
 import teammates.common.datatransfer.CommentParticipantType;
 import teammates.common.datatransfer.CommentSendingState;
 import teammates.common.datatransfer.CommentStatus;
@@ -18,8 +20,6 @@ import teammates.common.util.JsonUtils;
 import teammates.common.util.SanitizationHelper;
 import teammates.common.util.TimeHelper;
 import teammates.storage.entity.Comment;
-
-import com.google.appengine.api.datastore.Text;
 
 /**
  * A data transfer object for {@link Comment} entities.
@@ -79,11 +79,11 @@ public class CommentAttributes extends EntityAttributes implements Comparable<Co
     public Long getCommentId() {
         return this.commentId;
     }
-    
+
     public String getCommentText() {
         return commentText.getValue();
     }
-    
+
     public CommentParticipantType getRecipientType() {
         return this.recipientType;
     }
@@ -106,50 +106,31 @@ public class CommentAttributes extends EntityAttributes implements Comparable<Co
 
         FieldValidator validator = new FieldValidator();
         List<String> errors = new ArrayList<String>();
-        String error;
 
-        error = validator.getInvalidityInfoForCourseId(courseId);
-        if (!error.isEmpty()) {
-            errors.add(error);
-        }
+        addNonEmptyError(validator.getInvalidityInfoForCourseId(courseId), errors);
 
-        error = validator.getInvalidityInfoForEmail(giverEmail);
-        if (!error.isEmpty()) {
-            errors.add(error);
-        }
+        addNonEmptyError(validator.getInvalidityInfoForEmail(giverEmail), errors);
 
         if (recipients != null && recipientType != null) {
             switch (recipientType) {
             case PERSON :
                 for (String recipientId : recipients) {
-                    error = validator.getInvalidityInfoForEmail(recipientId);
-                    if (!error.isEmpty()) {
-                        errors.add(error);
-                    }
+                    addNonEmptyError(validator.getInvalidityInfoForEmail(recipientId), errors);
                 }
                 break;
             case TEAM :
                 for (String recipientId : recipients) {
-                    error = validator.getInvalidityInfoForTeamName(recipientId);
-                    if (!error.isEmpty()) {
-                        errors.add(error);
-                    }
+                    addNonEmptyError(validator.getInvalidityInfoForTeamName(recipientId), errors);
                 }
                 break;
             case SECTION :
                 for (String recipientId : recipients) {
-                    error = validator.getInvalidityInfoForSectionName(recipientId);
-                    if (!error.isEmpty()) {
-                        errors.add(error);
-                    }
+                    addNonEmptyError(validator.getInvalidityInfoForSectionName(recipientId), errors);
                 }
                 break;
             case COURSE :
                 for (String recipientId : recipients) {
-                    error = validator.getInvalidityInfoForCourseId(recipientId);
-                    if (!error.isEmpty()) {
-                        errors.add(error);
-                    }
+                    addNonEmptyError(validator.getInvalidityInfoForCourseId(recipientId), errors);
                 }
                 break;
             default : // cases for NONE or null
@@ -165,7 +146,7 @@ public class CommentAttributes extends EntityAttributes implements Comparable<Co
         return new Comment(courseId, giverEmail, recipientType, recipients, status, sendingState, showCommentTo,
                 showGiverNameTo, showRecipientNameTo, commentText, createdAt, lastEditorEmail, lastEditedAt);
     }
-    
+
     public Boolean isVisibleTo(CommentParticipantType targetViewer) {
         if (this.showCommentTo == null) {
             return false;
@@ -204,12 +185,12 @@ public class CommentAttributes extends EntityAttributes implements Comparable<Co
     public String getJsonString() {
         return JsonUtils.toJson(this, CommentAttributes.class);
     }
-    
+
     @Override
     public String getBackupIdentifier() {
         return Const.SystemParams.COURSE_BACKUP_LOG_MSG + courseId;
     }
-    
+
     @Override
     public void sanitizeForSaving() {
         this.courseId = this.courseId.trim();
@@ -256,7 +237,7 @@ public class CommentAttributes extends EntityAttributes implements Comparable<Co
             break;
         }
     }
-    
+
     private void removeIrrelevantVisibilityOptions() {
         if (this.showGiverNameTo != null) {
             Iterator<CommentParticipantType> iterGiver = this.showGiverNameTo.iterator();
@@ -281,13 +262,13 @@ public class CommentAttributes extends EntityAttributes implements Comparable<Co
         removeCommentRecipientTypeIn(showGiverNameTo, typeToRemove);
         removeCommentRecipientTypeIn(showRecipientNameTo, typeToRemove);
     }
-    
+
     private void removeCommentRecipientTypeIn(List<CommentParticipantType> visibilityOptions,
             CommentParticipantType typeToRemove) {
         if (visibilityOptions == null) {
             return;
         }
-        
+
         Iterator<CommentParticipantType> iter = visibilityOptions.iterator();
         while (iter.hasNext()) {
             CommentParticipantType otherType = iter.next();
@@ -314,7 +295,7 @@ public class CommentAttributes extends EntityAttributes implements Comparable<Co
             }
         });
     }
-    
+
     @Override
     public int compareTo(CommentAttributes o) {
         if (o == null) {
@@ -331,6 +312,6 @@ public class CommentAttributes extends EntityAttributes implements Comparable<Co
         return "(last edited "
              + (isGiverAnonymous ? "" : "by " + this.lastEditorEmail + " ")
              + "at " + displayTimeAs + ")";
-        
+
     }
 }

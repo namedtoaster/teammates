@@ -5,23 +5,27 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-import teammates.common.datatransfer.attributes.CommentAttributes;
 import teammates.common.datatransfer.CommentParticipantType;
+import teammates.common.datatransfer.attributes.CommentAttributes;
 import teammates.common.datatransfer.attributes.InstructorAttributes;
 import teammates.common.datatransfer.attributes.StudentAttributes;
 import teammates.common.util.Const;
+import teammates.common.util.Const.TaskQueue;
 import teammates.common.util.SanitizationHelper;
 import teammates.test.driver.AssertHelper;
 import teammates.ui.controller.InstructorStudentCommentEditAction;
 import teammates.ui.controller.RedirectResult;
 
+/**
+ * SUT: {@link InstructorStudentCommentEditAction}.
+ */
 public class InstructorStudentCommentEditActionTest extends BaseActionTest {
 
     @Override
     protected String getActionUri() {
         return Const.ActionURIs.INSTRUCTOR_STUDENT_COMMENT_EDIT;
     }
-    
+
     @Override
     @Test
     public void testExecuteAndPostProcess() throws Exception {
@@ -30,39 +34,38 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
         StudentAttributes student = dataBundle.students.get("student2InCourse1");
         StudentAttributes anotherStudent = dataBundle.students.get("student1InCourse1");
         String instructorId = instructor.googleId;
-        
+
         gaeSimulation.loginAsInstructor(instructorId);
 
         ______TS("Invalid parameters");
-        
+
         //no params
         verifyAssumptionFailure();
-        
+
         //null courseId
         String[] invalidParams = new String[] {
                 Const.ParamsNames.STUDENT_EMAIL, student.email
         };
-        
+
         verifyAssumptionFailure(invalidParams);
-        
+
         //null studentemail
         invalidParams = new String[] {
                 Const.ParamsNames.COURSE_ID, instructor.courseId
         };
-        
+
         verifyAssumptionFailure(invalidParams);
-        
+
         //null comment text
         invalidParams = new String[] {
                 Const.ParamsNames.COURSE_ID, instructor.courseId,
                 Const.ParamsNames.STUDENT_EMAIL, student.email
         };
-        
+
         verifyAssumptionFailure(invalidParams);
-        
 
         ______TS("Typical case, edit comment successful from student records page");
-        
+
         List<CommentAttributes> comments =
                 backDoorLogic.getCommentsForReceiver(
                                       instructor.courseId, CommentParticipantType.PERSON, student.email);
@@ -103,11 +106,11 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
                 + "for Course <span class=\"bold\">[" + instructor.courseId + "]</span><br>"
                 + "<span class=\"bold\">Comment:</span> <Text: An edited comment text>"
                 + "|||/page/instructorStudentCommentEdit";
-        
+
         AssertHelper.assertLogMessageEquals(expectedLogMessage, a.getLogMessage());
-        
+
         ______TS("Typical case, edit comment successful from comments page");
-        
+
         comments = backDoorLogic.getCommentsForReceiver(
                                          instructor.courseId, CommentParticipantType.PERSON, student.email);
         iterator = comments.iterator();
@@ -131,6 +134,8 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
         a = getAction(submissionParams);
         r = getRedirectResult(a);
 
+        verifySpecifiedTasksAdded(a, TaskQueue.PRODUCE_SEARCH_DOCUMENTS_COMMENTS_QUEUE_NAME, 1);
+
         assertEquals(Const.ActionURIs.INSTRUCTOR_COMMENTS_PAGE
                 + "?user=idOfInstructor3&"
                 + "courseid=idOfTypicalCourse1&"
@@ -147,11 +152,11 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
                 + "for Course <span class=\"bold\">[" + instructor.courseId + "]</span><br>"
                 + "<span class=\"bold\">Comment:</span> <Text: Another edited comment text>"
                 + "|||/page/instructorStudentCommentEdit";
-        
+
         AssertHelper.assertLogMessageEquals(expectedLogMessage, a.getLogMessage());
-        
+
         ______TS("Typical case, edit comment successful recipient type not null");
-        
+
         comments = backDoorLogic.getCommentsForReceiver(
                                          instructor.courseId, CommentParticipantType.PERSON, student.email);
         iterator = comments.iterator();
@@ -192,11 +197,11 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
                 + "for Course <span class=\"bold\">[" + instructor.courseId + "]</span><br>"
                 + "<span class=\"bold\">Comment:</span> <Text: some text>"
                 + "|||/page/instructorStudentCommentEdit";
-        
+
         AssertHelper.assertLogMessageEquals(expectedLogMessage, a.getLogMessage());
-        
+
         ______TS("Edit comment successful with empty recipients");
-        
+
         comments = backDoorLogic.getCommentsForReceiver(
                                          instructor.courseId, CommentParticipantType.PERSON, student.email);
         iterator = comments.iterator();
@@ -238,11 +243,11 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
                 + "for Course <span class=\"bold\">[" + instructor.courseId + "]</span><br>"
                 + "<span class=\"bold\">Comment:</span> <Text: some text>"
                 + "|||/page/instructorStudentCommentEdit";
-        
+
         AssertHelper.assertLogMessageEquals(expectedLogMessage, a.getLogMessage());
-        
+
         ______TS("Edit comment successful, giver not current instructor");
-        
+
         comments =
                 backDoorLogic.getCommentsForReceiver(
                                       anotherInstructor.courseId, CommentParticipantType.PERSON, anotherStudent.email);
@@ -283,11 +288,11 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
                 + "for Course <span class=\"bold\">[" + instructor.courseId + "]</span><br>"
                 + "<span class=\"bold\">Comment:</span> <Text: An edited comment text>"
                 + "|||/page/instructorStudentCommentEdit";
-        
+
         AssertHelper.assertLogMessageEquals(expectedLogMessage, a.getLogMessage());
-        
+
         ______TS("Edit comment successful, giver not current instructor with course as recipient");
-        
+
         comments = backDoorLogic.getCommentsForReceiver(
                                          instructor.courseId,
                                          CommentParticipantType.COURSE,
@@ -330,11 +335,11 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
                 + "for Course <span class=\"bold\">[" + instructor.courseId + "]</span><br>"
                 + "<span class=\"bold\">Comment:</span> <Text: some text>"
                 + "|||/page/instructorStudentCommentEdit";
-        
+
         AssertHelper.assertLogMessageEquals(expectedLogMessage, a.getLogMessage());
-        
+
         ______TS("Edit comment successful, giver not current instructor with section as recipient");
-        
+
         comments = backDoorLogic.getCommentsForReceiver(
                                          instructor.courseId,
                                          CommentParticipantType.SECTION,
@@ -377,11 +382,11 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
                 + "for Course <span class=\"bold\">[" + instructor.courseId + "]</span><br>"
                 + "<span class=\"bold\">Comment:</span> <Text: some text>"
                 + "|||/page/instructorStudentCommentEdit";
-        
+
         AssertHelper.assertLogMessageEquals(expectedLogMessage, a.getLogMessage());
-        
+
         ______TS("Edit comment successful, giver not current instructor with team as recipient");
-        
+
         comments = backDoorLogic.getCommentsForReceiver(
                                          instructor.courseId,
                                          CommentParticipantType.TEAM,
@@ -425,11 +430,11 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
                 + "for Course <span class=\"bold\">[" + instructor.courseId + "]</span><br>"
                 + "<span class=\"bold\">Comment:</span> <Text: some text>"
                 + "|||/page/instructorStudentCommentEdit";
-        
+
         AssertHelper.assertLogMessageEquals(expectedLogMessage, a.getLogMessage());
-        
+
         ______TS("Typical case, delete comment successful");
-        
+
         submissionParams = new String[] {
                 Const.ParamsNames.COMMENT_ID, comments.get(0).getCommentId().toString(),
                 Const.ParamsNames.COMMENT_EDITTYPE, "delete",
@@ -448,9 +453,9 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
                 r.getDestinationWithParams());
         assertFalse(r.isError);
         assertEquals("Comment deleted", r.getStatusMessage());
-        
+
         ______TS("Edit comment visibility successful show all comment details to recipient's team");
-        
+
         comments = backDoorLogic.getCommentsForReceiver(
                                          instructor.courseId, CommentParticipantType.PERSON, student.email);
         iterator = comments.iterator();
@@ -493,11 +498,11 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
                 + "for Course <span class=\"bold\">[" + instructor.courseId + "]</span><br>"
                 + "<span class=\"bold\">Comment:</span> <Text: some text>"
                 + "|||/page/instructorStudentCommentEdit";
-        
+
         AssertHelper.assertLogMessageEquals(expectedLogMessage, a.getLogMessage());
-        
+
         ______TS("Unsuccessful edit, non-existent comment");
-        
+
         submissionParams = new String[] {
                 Const.ParamsNames.COMMENT_ID, "123123123123", // non-existent comment id
                 Const.ParamsNames.COMMENT_EDITTYPE, "edit",
@@ -505,16 +510,16 @@ public class InstructorStudentCommentEditActionTest extends BaseActionTest {
                 Const.ParamsNames.STUDENT_EMAIL, student.email,
                 Const.ParamsNames.COMMENT_TEXT, "some text",
         };
-        
+
         try {
             a = getAction(submissionParams);
-            r = getRedirectResult(a);
+            getRedirectResult(a);
         } catch (AssertionError e) {
             assertEquals("Comment or instructor cannot be null for editing comment", e.getMessage());
         }
 
     }
-    
+
     @Override
     protected InstructorStudentCommentEditAction getAction(String... params) {
         return (InstructorStudentCommentEditAction) gaeSimulation.getActionObject(getActionUri(), params);

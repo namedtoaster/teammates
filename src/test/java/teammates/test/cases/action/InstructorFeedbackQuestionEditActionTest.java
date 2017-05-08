@@ -3,17 +3,17 @@ package teammates.test.cases.action;
 import org.testng.annotations.Test;
 
 import teammates.common.datatransfer.DataBundle;
+import teammates.common.datatransfer.FeedbackParticipantType;
+import teammates.common.datatransfer.FeedbackSessionDetailsBundle;
+import teammates.common.datatransfer.attributes.FeedbackQuestionAttributes;
+import teammates.common.datatransfer.attributes.FeedbackSessionAttributes;
+import teammates.common.datatransfer.attributes.InstructorAttributes;
 import teammates.common.datatransfer.questions.FeedbackConstantSumQuestionDetails;
 import teammates.common.datatransfer.questions.FeedbackContributionQuestionDetails;
 import teammates.common.datatransfer.questions.FeedbackMcqQuestionDetails;
 import teammates.common.datatransfer.questions.FeedbackMsqQuestionDetails;
 import teammates.common.datatransfer.questions.FeedbackNumericalScaleQuestionDetails;
-import teammates.common.datatransfer.FeedbackParticipantType;
-import teammates.common.datatransfer.attributes.FeedbackQuestionAttributes;
 import teammates.common.datatransfer.questions.FeedbackRubricQuestionDetails;
-import teammates.common.datatransfer.attributes.FeedbackSessionAttributes;
-import teammates.common.datatransfer.FeedbackSessionDetailsBundle;
-import teammates.common.datatransfer.attributes.InstructorAttributes;
 import teammates.common.exception.NullPostParameterException;
 import teammates.common.util.Const;
 import teammates.common.util.FieldValidator;
@@ -24,13 +24,16 @@ import teammates.storage.api.FeedbackResponsesDb;
 import teammates.ui.controller.InstructorFeedbackQuestionEditAction;
 import teammates.ui.controller.RedirectResult;
 
+/**
+ * SUT: {@link InstructorFeedbackQuestionEditAction}.
+ */
 public class InstructorFeedbackQuestionEditActionTest extends BaseActionTest {
 
     @Override
     protected String getActionUri() {
         return Const.ActionURIs.INSTRUCTOR_FEEDBACK_QUESTION_EDIT;
     }
-    
+
     @Override
     @Test
     public void testExecuteAndPostProcess() {
@@ -502,7 +505,7 @@ public class InstructorFeedbackQuestionEditActionTest extends BaseActionTest {
 
         // There is already responses for this question
         assertFalse(frDb.getFeedbackResponsesForQuestion(fq.getId()).isEmpty());
-        
+
         String[] editTextParams = {
                 Const.ParamsNames.COURSE_ID, fs.getCourseId(),
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, fs.getFeedbackSessionName(),
@@ -1132,7 +1135,7 @@ public class InstructorFeedbackQuestionEditActionTest extends BaseActionTest {
 
         // All existing responses should remain
         assertFalse(frDb.getFeedbackResponsesForQuestion(fq.getId()).isEmpty());
-        
+
         ______TS("Edit rubric weight");
 
         // There are already responses for this question
@@ -1289,9 +1292,9 @@ public class InstructorFeedbackQuestionEditActionTest extends BaseActionTest {
 
     @Test
     public void testExecuteAndPostProcessResponseRate() throws Exception {
-        
+
         removeAndRestoreTypicalDataBundle();
-        
+
         gaeSimulation.loginAsInstructor(dataBundle.instructors.get("instructor1OfCourse1").googleId);
 
         FeedbackSessionsLogic fsLogic = FeedbackSessionsLogic.inst();

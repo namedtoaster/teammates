@@ -12,13 +12,16 @@ import teammates.test.driver.AssertHelper;
 import teammates.ui.controller.InstructorFeedbackQuestionCopyAction;
 import teammates.ui.controller.RedirectResult;
 
+/**
+ * SUT: {@link InstructorFeedbackQuestionCopyAction}.
+ */
 public class InstructorFeedbackQuestionCopyActionTest extends BaseActionTest {
 
     @Override
     protected String getActionUri() {
         return Const.ActionURIs.INSTRUCTOR_FEEDBACK_QUESTION_COPY;
     }
-    
+
     @Override
     protected void prepareTestData() {
         // test data is refreshed before each test case

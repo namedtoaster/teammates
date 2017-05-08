@@ -5,13 +5,12 @@ import java.util.List;
 import teammates.common.datatransfer.attributes.InstructorAttributes;
 import teammates.common.util.Const;
 
-import com.google.appengine.api.search.Document;
-
 /**
- * The {@link SearchQuery} object that defines how we query {@link Document} for response comments.
+ * The {@link SearchQuery} object that defines how we query
+ * {@link com.google.appengine.api.search.Document} for response comments.
  */
 public class FeedbackResponseCommentSearchQuery extends SearchQuery {
-    
+
     public FeedbackResponseCommentSearchQuery(List<InstructorAttributes> instructors, String queryString) {
         super(instructors, queryString);
     }
@@ -25,9 +24,9 @@ public class FeedbackResponseCommentSearchQuery extends SearchQuery {
             delim = OR;
         }
         courseIdLimit.append(')');
-        
+
         //TODO: verify section
         return Const.SearchDocumentField.COURSE_ID + ":" + courseIdLimit.toString();
     }
-    
+
 }

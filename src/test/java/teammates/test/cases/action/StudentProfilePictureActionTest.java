@@ -16,6 +16,9 @@ import teammates.test.driver.AssertHelper;
 import teammates.ui.controller.ImageResult;
 import teammates.ui.controller.StudentProfilePictureAction;
 
+/**
+ * SUT: {@link StudentProfilePictureAction}.
+ */
 public class StudentProfilePictureActionTest extends BaseActionTest {
 
     private AccountAttributes account;
@@ -25,7 +28,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
     protected String getActionUri() {
         return Const.ActionURIs.STUDENT_PROFILE_PICTURE;
     }
-    
+
     @BeforeClass
     public void classSetup() {
         account = dataBundle.accounts.get("student1InCourse1");
@@ -40,7 +43,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
         testActionWithEmailAndCourse();
     }
 
-    public void testActionWithNoParams() {
+    private void testActionWithNoParams() {
 
         ______TS("Failure case: no parameters given");
         gaeSimulation.loginAsStudent(account.googleId);
@@ -61,15 +64,13 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
      * Tests the branch of the Action handling a request from the Student
      * directly, where the parameters are simply the blobKey of the picture
      * itself.
-     * 
-     * @throws Exception
      */
     public void testActionWithBlobKey() {
         testActionWithBlobKeySuccess();
         testActionWithBlobKeySuccessMasquerade();
     }
 
-    protected void testActionWithBlobKeySuccess() {
+    private void testActionWithBlobKeySuccess() {
         ______TS("Typical case: using blobkey");
         gaeSimulation.loginAsStudent(account.googleId);
 
@@ -85,7 +86,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
         verifyLogMessageForActionWithBlobKey(false, action.getLogMessage());
     }
 
-    protected void testActionWithBlobKeySuccessMasquerade() {
+    private void testActionWithBlobKeySuccessMasquerade() {
         ______TS("Typical case: masquerade mode");
         gaeSimulation.loginAsAdmin("admin.user");
 
@@ -103,11 +104,9 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
 
     /**
      * Tests the branch of the Action handling a request from an Instructor,
-     * where the parameters are the student's course and email
-     * 
-     * @throws Exception
+     * where the parameters are the student's course and email.
      */
-    public void testActionWithEmailAndCourse() throws Exception {
+    private void testActionWithEmailAndCourse() throws Exception {
         AccountAttributes instructor = dataBundle.accounts.get("instructor1OfCourse1");
         gaeSimulation.loginAsInstructor("idOfInstructor1OfCourse1");
 
@@ -118,7 +117,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
         testActionWithEmailAndCourseUnauthorisedInstructorOrStudentMasquerade();
     }
 
-    protected void testActionWithEmailAndCourseSuccessTypical(AccountAttributes instructor) {
+    private void testActionWithEmailAndCourseSuccessTypical(AccountAttributes instructor) {
 
         ______TS("Typical case: using email and course");
 
@@ -136,7 +135,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
         verifyLogMessageForActionWithEmailAndCourse(instructor, false, action.getLogMessage());
     }
 
-    protected void testActionWithEmailAndCourseNoStudent() {
+    private void testActionWithEmailAndCourseNoStudent() {
         ______TS("Failure case: student does not exist");
 
         String[] submissionParams = new String[] {
@@ -153,7 +152,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
         }
     }
 
-    protected void testActionWithEmailAndCourseForUnregStudent() throws Exception {
+    private void testActionWithEmailAndCourseForUnregStudent() throws Exception {
         InstructorAttributes unregCourseInstructor = createNewInstructorForUnregCourse();
         gaeSimulation.loginAsInstructor(unregCourseInstructor.googleId);
 
@@ -191,12 +190,12 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
         assertEquals("", result.blobKey);
     }
 
-    protected void testActionWithEmailAndCourseUnauthorisedInstructorOrStudent() {
+    private void testActionWithEmailAndCourseUnauthorisedInstructorOrStudent() {
         String[] submissionParams = new String[] {
                 Const.ParamsNames.STUDENT_EMAIL, StringHelper.encrypt(student.email),
                 Const.ParamsNames.COURSE_ID, StringHelper.encrypt(student.course)
         };
-        
+
         ______TS("Failure case: instructor not from same course");
         AccountAttributes unauthInstructor = dataBundle.accounts.get("instructor1OfCourse2");
         gaeSimulation.loginAsInstructor(unauthInstructor.googleId);
@@ -208,7 +207,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
         } catch (UnauthorizedAccessException uae) {
             assertEquals("User is not in the course that student belongs to", uae.getMessage());
         }
-        
+
         ______TS("Failure case: instructor from same course with no 'viewing student' privilege");
         unauthInstructor = dataBundle.accounts.get("helperOfCourse1");
         gaeSimulation.loginAsInstructor(unauthInstructor.googleId);
@@ -220,7 +219,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
         } catch (UnauthorizedAccessException uae) {
             assertEquals("Instructor does not have enough privileges to view the photo", uae.getMessage());
         }
-        
+
         ______TS("Failure case: student not from same course");
         AccountAttributes unauthStudent = dataBundle.accounts.get("student1InArchivedCourse");
         gaeSimulation.loginAsStudent(unauthStudent.googleId);
@@ -232,9 +231,9 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
         } catch (UnauthorizedAccessException uae) {
             assertEquals("User is not in the course that student belongs to", uae.getMessage());
         }
-        
+
         ______TS("Failure case: student not from same team");
-        
+
         StudentAttributes studentFromDifferentTeam = dataBundle.students.get("student5InCourse1");
         gaeSimulation.loginAsStudent(studentFromDifferentTeam.googleId);
 
@@ -246,13 +245,13 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
             assertEquals("Student does not have enough privileges to view the photo", uae.getMessage());
         }
     }
-    
-    protected void testActionWithEmailAndCourseUnauthorisedInstructorOrStudentMasquerade() {
+
+    private void testActionWithEmailAndCourseUnauthorisedInstructorOrStudentMasquerade() {
         String[] submissionParams = new String[] {
                 Const.ParamsNames.STUDENT_EMAIL, StringHelper.encrypt(student.email),
                 Const.ParamsNames.COURSE_ID, StringHelper.encrypt(student.course)
         };
-        
+
         ______TS("Failure case: unauthorised student masqueraded as a student from same team");
         AccountAttributes unauthStudent = dataBundle.accounts.get("student1InArchivedCourse");
         gaeSimulation.loginAsStudent(unauthStudent.googleId);
@@ -263,7 +262,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
             assertEquals("User student1InArchivedCourse is trying to masquerade as"
                     + " student1InCourse1 without admin permission.", uae.getMessage());
         }
-        
+
         ______TS("Failure case: unauthorised instructor masqueraded as an authorised instructor");
         AccountAttributes unauthInstructor = dataBundle.accounts.get("instructor1OfCourse2");
         AccountAttributes instructor = dataBundle.accounts.get("instructor1OfCourse1");
@@ -275,7 +274,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
             assertEquals("User idOfInstructor1OfCourse2 is trying to masquerade as"
                     + " idOfInstructor1OfCourse1 without admin permission.", uae.getMessage());
         }
-        
+
         gaeSimulation.loginAsAdmin("admin.user");
         ______TS("Failure case: masqueraded instructor not from same course");
         StudentProfilePictureAction action = getAction(addUserIdToParams(unauthInstructor.googleId, submissionParams));
@@ -285,7 +284,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
         } catch (UnauthorizedAccessException uae) {
             assertEquals("User is not in the course that student belongs to", uae.getMessage());
         }
-        
+
         ______TS("Failure case: masqueraded student not from same course");
         action = getAction(addUserIdToParams(unauthStudent.googleId, submissionParams));
         try {
@@ -294,7 +293,7 @@ public class StudentProfilePictureActionTest extends BaseActionTest {
         } catch (UnauthorizedAccessException uae) {
             assertEquals("User is not in the course that student belongs to", uae.getMessage());
         }
-        
+
         ______TS("Failure case: masqueraded student not from same team");
         StudentAttributes studentFromDifferentTeam = dataBundle.students.get("student5InCourse1");
         action = getAction(addUserIdToParams(studentFromDifferentTeam.googleId, submissionParams));

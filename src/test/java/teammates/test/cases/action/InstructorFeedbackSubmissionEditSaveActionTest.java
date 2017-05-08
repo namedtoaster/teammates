@@ -3,11 +3,11 @@ package teammates.test.cases.action;
 import org.testng.annotations.Test;
 
 import teammates.common.datatransfer.DataBundle;
-import teammates.common.datatransfer.questions.FeedbackNumericalScaleQuestionDetails;
 import teammates.common.datatransfer.attributes.FeedbackQuestionAttributes;
 import teammates.common.datatransfer.attributes.FeedbackResponseAttributes;
 import teammates.common.datatransfer.attributes.FeedbackSessionAttributes;
 import teammates.common.datatransfer.attributes.InstructorAttributes;
+import teammates.common.datatransfer.questions.FeedbackNumericalScaleQuestionDetails;
 import teammates.common.exception.NullPostParameterException;
 import teammates.common.util.Const;
 import teammates.common.util.EmailType;
@@ -21,6 +21,9 @@ import teammates.storage.api.FeedbackSessionsDb;
 import teammates.ui.controller.InstructorFeedbackSubmissionEditSaveAction;
 import teammates.ui.controller.RedirectResult;
 
+/**
+ * SUT: {@link InstructorFeedbackSubmissionEditSaveAction}.
+ */
 public class InstructorFeedbackSubmissionEditSaveActionTest extends BaseActionTest {
     private static final CoursesLogic coursesLogic = CoursesLogic.inst();
 
@@ -28,7 +31,7 @@ public class InstructorFeedbackSubmissionEditSaveActionTest extends BaseActionTe
     protected String getActionUri() {
         return Const.ActionURIs.INSTRUCTOR_FEEDBACK_SUBMISSION_EDIT_SAVE;
     }
-    
+
     @Override
     protected void prepareTestData() {
         dataBundle = loadDataBundle("/InstructorFeedbackSubmissionEditSaveActionTest.json");
@@ -112,7 +115,7 @@ public class InstructorFeedbackSubmissionEditSaveActionTest extends BaseActionTe
 
         // submission confirmation email not sent if parameter does not exist
         verifyNoEmailsSent(a);
-        
+
         ______TS("Successful case: deleted response");
 
         submissionParams = new String[]{
@@ -138,7 +141,7 @@ public class InstructorFeedbackSubmissionEditSaveActionTest extends BaseActionTe
 
         // submission confirmation email sent
         verifyNumberOfEmailsSent(a, 1);
-        
+
         EmailWrapper email = getEmailsSent(a).get(0);
         String courseName = coursesLogic.getCourse(fr.courseId).getName();
         assertEquals(String.format(EmailType.FEEDBACK_SUBMISSION_CONFIRMATION.getSubject(), courseName,
@@ -297,7 +300,7 @@ public class InstructorFeedbackSubmissionEditSaveActionTest extends BaseActionTe
 
         // submission confirmation email not sent if the action is an error, even with submission parameter "on"
         verifyNoEmailsSent(a);
-        
+
         ______TS("Successful case: mcq: typical case");
 
         DataBundle dataBundle = loadDataBundle("/FeedbackSessionQuestionTypeTest.json");

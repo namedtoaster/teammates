@@ -8,24 +8,27 @@ import teammates.common.datatransfer.attributes.CourseAttributes;
 import teammates.common.util.FieldValidator;
 import teammates.common.util.StringHelper;
 import teammates.test.cases.BaseTestCase;
+import teammates.test.driver.StringHelperExtension;
 
+/**
+ * SUT: {@link CourseAttributes}.
+ */
 public class CourseAttributesTest extends BaseTestCase {
 
     //TODO: add test for constructor
-    
+
     @Test
     public void testValidate() throws Exception {
-        
+
         CourseAttributes validCourse = generateValidCourseAttributesObject();
-        
+
         assertTrue("valid value", validCourse.isValid());
-        
-        
-        String veryLongId = StringHelper.generateStringOfLength(FieldValidator.COURSE_ID_MAX_LENGTH + 1);
+
+        String veryLongId = StringHelperExtension.generateStringOfLength(FieldValidator.COURSE_ID_MAX_LENGTH + 1);
         String emptyName = "";
         String invalidTimeZone = "InvalidTimeZone";
         CourseAttributes invalidCourse = new CourseAttributes(veryLongId, emptyName, invalidTimeZone);
-        
+
         assertFalse("invalid value", invalidCourse.isValid());
         String errorMessage =
                 getPopulatedErrorMessage(
@@ -46,19 +49,19 @@ public class CourseAttributesTest extends BaseTestCase {
     public void testGetValidityInfo() {
         //already tested in testValidate() above
     }
-    
+
     @Test
     public void testIsValid() {
         //already tested in testValidate() above
     }
-    
+
     @Test
     public void testToString() {
         CourseAttributes c = generateValidCourseAttributesObject();
         assertEquals("[CourseAttributes] id: valid-id-$_abc name: valid-name timeZone: UTC", c.toString());
     }
-    
-    public static CourseAttributes generateValidCourseAttributesObject() {
+
+    private static CourseAttributes generateValidCourseAttributesObject() {
         return new CourseAttributes("valid-id-$_abc", "valid-name", "UTC");
     }
 

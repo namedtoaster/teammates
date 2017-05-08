@@ -2,12 +2,15 @@ package teammates.test.cases.logic;
 
 import org.testng.annotations.Test;
 
-import teammates.common.datatransfer.attributes.CourseAttributes;
 import teammates.common.datatransfer.DataBundle;
+import teammates.common.datatransfer.attributes.CourseAttributes;
 import teammates.common.exception.InvalidParametersException;
 import teammates.common.util.Const;
 import teammates.common.util.FieldValidator;
 
+/**
+ * SUT: {@link teammates.logic.backdoor.BackDoorLogic}.
+ */
 public class BackDoorLogicTest extends BaseLogicTest {
 
     @Override
@@ -15,7 +18,7 @@ public class BackDoorLogicTest extends BaseLogicTest {
         dataBundle = getTypicalDataBundle();
         // data bundle not persisted before test since the remove/restore data itself is being tested
     }
-    
+
     @Test
     public void testPersistDataBundle() throws Exception {
 
@@ -28,14 +31,13 @@ public class BackDoorLogicTest extends BaseLogicTest {
         verifyPresentInDatastore(dataBundle);
 
         ______TS("try to persist while entities exist");
-        
+
         backDoorLogic.persistDataBundle(loadDataBundle("/FeedbackSessionResultsTest.json"));
         verifyPresentInDatastore(loadDataBundle("/FeedbackSessionResultsTest.json"));
-        
+
         ______TS("null parameter");
-        DataBundle nullDataBundle = null;
         try {
-            backDoorLogic.persistDataBundle(nullDataBundle);
+            backDoorLogic.persistDataBundle(null);
             signalFailureToDetectException();
         } catch (InvalidParametersException e) {
             assertEquals(Const.StatusCodes.NULL_PARAMETER, e.errorCode);
@@ -58,7 +60,7 @@ public class BackDoorLogicTest extends BaseLogicTest {
         // Not checking for invalid values in other entities because they
         // should be checked at lower level methods
     }
-    
+
     /*
      * Following methods are tested by the testPersistDataBundle method
         getAccountAsJson(String)

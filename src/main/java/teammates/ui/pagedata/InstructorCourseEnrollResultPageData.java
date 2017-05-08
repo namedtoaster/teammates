@@ -3,23 +3,26 @@ package teammates.ui.pagedata;
 import java.util.ArrayList;
 import java.util.List;
 
+import teammates.common.datatransfer.StudentUpdateStatus;
 import teammates.common.datatransfer.attributes.AccountAttributes;
 import teammates.common.datatransfer.attributes.StudentAttributes;
-import teammates.common.datatransfer.StudentUpdateStatus;
 import teammates.common.util.Const;
+import teammates.common.util.Logger;
 import teammates.ui.template.EnrollResultPanel;
 
 /**
- * PageData: page data for the 'Result' page after enrollment for a course
+ * PageData: page data for the 'Result' page after enrollment for a course.
  */
 public class InstructorCourseEnrollResultPageData extends PageData {
-    
+
+    private static final Logger log = Logger.getLogger();
+
     private String courseId;
     private List<StudentAttributes>[] students;
     private boolean hasSection;
     private String enrollStudents;
     private List<EnrollResultPanel> enrollResultPanelList;
-    
+
     public InstructorCourseEnrollResultPageData(AccountAttributes account, String courseId,
                                                 List<StudentAttributes>[] students, boolean hasSection,
                                                 String enrollStudents) {
@@ -29,10 +32,10 @@ public class InstructorCourseEnrollResultPageData extends PageData {
         this.hasSection = hasSection;
         this.enrollStudents = enrollStudents;
         enrollResultPanelList = new ArrayList<EnrollResultPanel>();
-        
+
         for (int i = 0; i < StudentUpdateStatus.STATUS_COUNT; i++) {
             String panelClass = "";
-            
+
             switch (StudentUpdateStatus.enumRepresentation(i)) {
             case ERROR :
                 panelClass = "panel-danger";
@@ -56,29 +59,29 @@ public class InstructorCourseEnrollResultPageData extends PageData {
                 log.severe("Unknown Enrollment status " + i);
                 break;
             }
-            
+
             String messageForEnrollmentStatus = getMessageForEnrollmentStatus(i);
             EnrollResultPanel enrollResultPanel = new EnrollResultPanel(panelClass, messageForEnrollmentStatus, students[i]);
             enrollResultPanelList.add(enrollResultPanel);
         }
     }
-    
+
     public String getCourseId() {
         return courseId;
     }
-    
+
     public boolean isHasSection() {
         return hasSection;
     }
-    
+
     public String getEnrollStudents() {
         return enrollStudents;
     }
-    
+
     public List<EnrollResultPanel> getEnrollResultPanelList() {
         return enrollResultPanelList;
     }
-    
+
     private String getMessageForEnrollmentStatus(int enrollmentStatus) {
 
         StudentUpdateStatus status = StudentUpdateStatus.enumRepresentation(enrollmentStatus);
@@ -107,7 +110,7 @@ public class InstructorCourseEnrollResultPageData extends PageData {
             return "There are students:";
         }
     }
-    
+
     public String getInstructorCourseEnrollLink() {
         return getInstructorCourseEnrollLink(courseId);
     }

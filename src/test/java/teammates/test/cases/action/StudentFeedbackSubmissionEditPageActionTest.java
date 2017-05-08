@@ -15,13 +15,16 @@ import teammates.ui.controller.RedirectResult;
 import teammates.ui.controller.ShowPageResult;
 import teammates.ui.controller.StudentFeedbackSubmissionEditPageAction;
 
+/**
+ * SUT: {@link StudentFeedbackSubmissionEditPageAction}.
+ */
 public class StudentFeedbackSubmissionEditPageActionTest extends BaseActionTest {
 
     @Override
     protected String getActionUri() {
         return Const.ActionURIs.STUDENT_FEEDBACK_SUBMISSION_EDIT_PAGE;
     }
-    
+
     @Override
     protected void prepareTestData() {
         dataBundle = loadDataBundle("/StudentFeedbackSubmissionEditPageActionTest.json");
@@ -151,7 +154,7 @@ public class StudentFeedbackSubmissionEditPageActionTest extends BaseActionTest 
                           + "true|||Unregistered:idOfTypicalCourse1|||Unreg Student|||Unregistered|||unreg@stud.ent|||"
                           + "null|||/page/studentFeedbackSubmissionEditPage", pageAction.getLogMessage(),
                             unregStudent.email, unregStudent.course);
-            
+
             redirectResult = getRedirectResult(pageAction);
             signalFailureToDetectException("EntityDoesNotExist");
         } catch (EntityNotFoundException enfe) {

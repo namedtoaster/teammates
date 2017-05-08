@@ -9,13 +9,16 @@ import teammates.ui.controller.InstructorCourseEnrollPageAction;
 import teammates.ui.controller.ShowPageResult;
 import teammates.ui.pagedata.InstructorCourseEnrollPageData;
 
+/**
+ * SUT: {@link InstructorCourseEnrollPageAction}.
+ */
 public class InstructorCourseEnrollPageActionTest extends BaseActionTest {
-    
+
     @Override
     protected String getActionUri() {
         return Const.ActionURIs.INSTRUCTOR_COURSE_ENROLL_PAGE;
     }
-    
+
     @Override
     @Test
     public void testExecuteAndPostProcess() {
@@ -45,7 +48,7 @@ public class InstructorCourseEnrollPageActionTest extends BaseActionTest {
                 Const.ParamsNames.COURSE_ID, courseId
         };
         InstructorCourseEnrollPageAction enrollPageAction = getAction(submissionParams);
-        
+
         ShowPageResult pageResult = getShowPageResult(enrollPageAction);
         assertEquals(Const.ViewURIs.INSTRUCTOR_COURSE_ENROLL + "?error=false&user=idOfInstructor4",
                      pageResult.getDestinationWithParams());
@@ -108,7 +111,7 @@ public class InstructorCourseEnrollPageActionTest extends BaseActionTest {
                      pageResult.getDestinationWithParams());
         assertFalse(pageResult.isError);
         assertEquals("", pageResult.getStatusMessage());
-        
+
         InstructorCourseEnrollPageData pageData = (InstructorCourseEnrollPageData) pageResult.data;
         assertEquals(courseId, pageData.getCourseId());
         assertEquals(null, pageData.getEnrollStudents());

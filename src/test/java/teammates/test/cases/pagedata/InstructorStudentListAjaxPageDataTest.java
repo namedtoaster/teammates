@@ -7,10 +7,10 @@ import java.util.Map;
 
 import org.testng.annotations.Test;
 
-import teammates.common.datatransfer.attributes.AccountAttributes;
 import teammates.common.datatransfer.SectionDetailsBundle;
-import teammates.common.datatransfer.attributes.StudentAttributes;
 import teammates.common.datatransfer.TeamDetailsBundle;
+import teammates.common.datatransfer.attributes.AccountAttributes;
+import teammates.common.datatransfer.attributes.StudentAttributes;
 import teammates.common.util.Const;
 import teammates.common.util.SanitizationHelper;
 import teammates.common.util.Url;
@@ -20,17 +20,20 @@ import teammates.ui.template.StudentListSectionData;
 import teammates.ui.template.StudentListStudentData;
 import teammates.ui.template.StudentListTeamData;
 
+/**
+ * SUT: {@link InstructorStudentListAjaxPageData}.
+ */
 public class InstructorStudentListAjaxPageDataTest extends BaseTestCase {
-    
+
     private AccountAttributes acct;
     private SectionDetailsBundle sampleSection;
     private TeamDetailsBundle sampleTeam;
     private StudentAttributes sampleStudent;
 
     private Map<String, Map<String, Boolean>> sectionPrivileges;
-    
+
     private String photoUrl;
-    
+
     @Test
     public void allTests() {
         InstructorStudentListAjaxPageData islapd = initializeData();
@@ -83,23 +86,23 @@ public class InstructorStudentListAjaxPageDataTest extends BaseTestCase {
 
     private InstructorStudentListAjaxPageData initializeData() {
         photoUrl = "validPhotoUrl";
-        
+
         acct = new AccountAttributes();
         acct.googleId = "valid.id"; // only googleId is needed
-        
+
         sampleStudent = new StudentAttributes();
         sampleStudent.name = "<script>alert(\"Valid name\");</script>";
         sampleStudent.email = "1+1@email.com";
         sampleStudent.course = "valid course"; // only three fields needed
-        
+
         sampleTeam = new TeamDetailsBundle();
         sampleTeam.students.add(sampleStudent);
         sampleTeam.name = "valid team name >.<";
-        
+
         sampleSection = new SectionDetailsBundle();
         sampleSection.teams.add(sampleTeam);
         sampleSection.name = "<valid section name>";
-        
+
         List<SectionDetailsBundle> sections = new ArrayList<SectionDetailsBundle>();
         sections.add(sampleSection);
 
@@ -112,7 +115,7 @@ public class InstructorStudentListAjaxPageDataTest extends BaseTestCase {
 
         Map<String, String> emailPhotoUrlMapping = new HashMap<String, String>();
         emailPhotoUrlMapping.put(sampleStudent.email, photoUrl);
-        
+
         return new InstructorStudentListAjaxPageData(acct, "valid course id", 1, true, sections,
                                                      sectionPrivileges, emailPhotoUrlMapping);
     }
